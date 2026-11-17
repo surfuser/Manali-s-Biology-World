@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manali's Biology World | NEET, IGCSE, IBDP, ICSE & CBSE Biology Classes</title>
+  <meta name="description" content="Premier Biology Coaching & Global Online/Offline Mentorship in Mazgaon, Mumbai for NEET, IBDP (HL & SL), IGCSE, ICSE, and CBSE Boards. Rated 5.0★ across 128+ verified student reviews." />
+
+  <!-- Google Fonts: Cormorant Garamond, Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ivory: '#F7F8F5',
+            pearl: '#FAFBF8',
+            emerald: {
+              deep: '#0D281E',
+              forest: '#133A2C',
+              moss: '#1F5440',
+            },
+            sage: {
+              mist: '#7A9A8B',
+              soft: '#DCE5E0',
+              tint: '#EBF0ED'
+            },
+            champagne: {
+              gold: '#C8A45D',
+              light: '#E6D2A6',
+              dark: '#9E7D3B'
+            }
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          boxShadow: {
+            'atelier': '0 24px 60px -15px rgba(13, 40, 30, 0.08)',
+            'atelier-hover': '0 32px 70px -12px rgba(13, 40, 30, 0.14)',
+            'gold-glow': '0 10px 30px -5px rgba(200, 164, 93, 0.35)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Three.js, GSAP & ScrollTrigger, Lucide Icons -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F7F8F5;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #133A2C;
+      border-radius: 9999px;
+      border: 2px solid #F7F8F5;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #C8A45D;
+    }
+
+    /* Tactile Grain Overlay */
+    .grain-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.032;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* Glassmorphism Utilities */
+    .glass-nav {
+      background: rgba(250, 251, 248, 0.78);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(13, 40, 30, 0.08);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(13, 40, 30, 0.08);
+    }
+
+    .glass-dark {
+      background: rgba(13, 40, 30, 0.94);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(200, 164, 93, 0.22);
+    }
+
+    /* 3D Canvas Positioning */
+    #bio-canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Subtle Pulse Animation for Live Status */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.85); opacity: 0.9; }
+      70% { transform: scale(2.1); opacity: 0; }
+      100% { transform: scale(2.1); opacity: 0; }
+    }
+    .live-dot::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      background-color: #10B981;
+      animation: pulse-ring 2.2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+    }
+
+    /* Bento Card Hover Micro-Interactions */
+    .bento-card {
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease;
+    }
+    .bento-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(200, 164, 93, 0.45);
+      box-shadow: 0 32px 70px -12px rgba(13, 40, 30, 0.12);
+    }
+
+    /* Custom Tab Active State */
+    .board-tab.active {
+      background-color: #0D281E;
+      color: #FAFBF8;
+      border-color: #0D281E;
+    }
+  </style>
+</head>
+<body class="bg-ivory text-emerald-deep font-sans antialiased selection:bg-emerald-deep selection:text-champagne-light overflow-x-hidden">
+
+  <!-- Subtle Tactile Film Grain -->
+  <div class="grain-overlay" aria-hidden="true"></div>
+
+  <!-- Fixed Interactive 3D WebGL DNA & Cellular Constellation Canvas -->
+  <div id="bio-canvas-container" aria-hidden="true"></div>
+
+  <!-- ===================================================================== -->
+  <!-- 1. FLOATING GLASS NAVBAR                                              -->
+  <!-- ===================================================================== -->
+  <header class="fixed top-4 inset-x-0 z-50 px-4 sm:px-6 lg:px-8 transition-all duration-300" id="navbar">
+    <nav class="max-w-7xl mx-auto glass-nav rounded-2xl px-4 sm:px-6 py-3 flex items-center justify-between shadow-atelier">
+      <!-- Brand Monogram + Wordmark -->
+      <a href="#top" class="flex items-center gap-3 group focus:outline-none">
+        <div class="w-10 h-10 rounded-xl bg-emerald-deep flex items-center justify-center text-champagne-gold shadow-md group-hover:scale-105 transition-transform duration-300">
+          <!-- Custom Minimal DNA + Botanical Leaf Monogram SVG -->
+          <svg class="w-6 h-6" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 4C8 10 20 10 20 14C20 18 8 18 8 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M20 4C20 10 8 10 8 14C8 18 20 18 20 24" stroke="#E6D2A6" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="10.5" y1="7" x2="17.5" y2="7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            <line x1="11.5" y1="14" x2="16.5" y2="14" stroke="#E6D2A6" stroke-width="1.4" stroke-linecap="round"/>
+            <line x1="10.5" y1="21" x2="17.5" y2="21" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            <circle cx="14" cy="14" r="2" fill="#C8A45D"/>
+          </svg>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-serif font-bold text-lg sm:text-xl leading-none tracking-tight text-emerald-deep">
+            Manali's Biology World
+          </span>
+          <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-sage-mist mt-1">
+            Mumbai &bull; Global Atelier
+          </span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Links -->
+      <div class="hidden lg:flex items-center gap-8 text-sm font-medium text-emerald-forest/85">
+        <a href="#programs" class="hover:text-emerald-deep transition-colors py-1 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-champagne-gold hover:after:w-full after:transition-all">Programs</a>
+        <a href="#methodology" class="hover:text-emerald-deep transition-colors py-1 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-champagne-gold hover:after:w-full after:transition-all">Methodology</a>
+        <a href="#transformations" class="hover:text-emerald-deep transition-colors py-1 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-champagne-gold hover:after:w-full after:transition-all">Transformations</a>
+        <a href="#concierge" class="hover:text-emerald-deep transition-colors py-1 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-champagne-gold hover:after:w-full after:transition-all">Visit &amp; Enroll</a>
+      </div>
+
+      <!-- Right Action Buttons -->
+      <div class="flex items-center gap-2.5 sm:gap-3">
+        <a href="tel:+917715893198" class="hidden sm:inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-mono font-medium text-emerald-deep bg-sage-tint/80 hover:bg-sage-soft transition-colors" title="Call +91 77158 93198">
+          <i data-lucide="phone" class="w-3.5 h-3.5 text-champagne-dark"></i>
+          <span>+91 77158 93198</span>
+        </a>
+        <button onclick="openBookingModal('IBDP / IGCSE / NEET')" class="magnetic-btn inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-emerald-deep text-pearl text-xs sm:text-sm font-semibold hover:bg-emerald-forest transition-all shadow-md hover:shadow-gold-glow cursor-pointer">
+          <span>Book Diagnostic</span>
+          <i data-lucide="arrow-up-right" class="w-4 h-4 text-champagne-gold"></i>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- 2. FULL-VIEWPORT INTERACTIVE 3D HERO                                  -->
+  <!-- ===================================================================== -->
+  <main id="top" class="relative z-10">
+    <section class="min-h-screen pt-32 pb-20 lg:pt-36 lg:pb-24 px-4 sm:px-6 lg:px-8 flex flex-col justify-center">
+      <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+        
+        <!-- Left Column: Editorial Typography & Value Proposition -->
+        <div class="lg:col-span-7 space-y-7 hero-stagger">
+          <!-- Verified Google Rating Badge -->
+          <div class="inline-flex flex-wrap items-center gap-2.5 px-4 py-2 rounded-full glass-card shadow-sm">
+            <div class="flex items-center gap-0.5 text-champagne-gold">
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+            </div>
+            <span class="font-mono text-xs font-semibold text-emerald-deep">5.0</span>
+            <span class="text-emerald-deep/30">&bull;</span>
+            <span class="font-mono text-xs text-emerald-forest/80">128 Verified 5-Star Reviews</span>
+            <span class="hidden sm:inline text-emerald-deep/30">&bull;</span>
+            <span class="hidden sm:inline font-mono text-xs text-champagne-dark font-medium">Mumbai &amp; Global Online</span>
+          </div>
+
+          <!-- Editorial Headline -->
+          <h1 class="font-serif font-semibold text-5xl sm:text-6xl lg:text-[4.35rem] leading-[1.04] tracking-tight text-emerald-deep">
+            Where Complex Biology Becomes <span class="italic font-normal text-emerald-moss">Unshakeable</span> Mastery.
+          </h1>
+
+          <!-- Strategic Brand Narrative -->
+          <p class="text-base sm:text-lg text-emerald-forest/85 max-w-2xl leading-relaxed font-normal">
+            Led by <strong class="font-semibold text-emerald-deep">Miss Manali</strong> in Mazgaon, Mumbai and across international timezones—we replace passive textbook memorization with visual, logic-first mentorship for <span class="underline decoration-champagne-gold/70 decoration-2 underline-offset-4 font-medium">NEET UG, IBDP (HL &amp; SL), IGCSE, ICSE, and CBSE</span> scholars.
+          </p>
+
+          <!-- Primary & Secondary CTAs -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-1">
+            <button onclick="openBookingModal('1-on-1 Diagnostic Consultation')" class="px-7 py-4 rounded-2xl bg-emerald-deep text-pearl font-semibold text-sm sm:text-base flex items-center justify-center gap-2.5 hover:bg-emerald-forest transition-all shadow-atelier hover:shadow-gold-glow cursor-pointer">
+              <span>Schedule 1-on-1 Demo Class</span>
+              <i data-lucide="sparkles" class="w-4 h-4 text-champagne-gold"></i>
+            </button>
+            <a href="#transformations" class="px-7 py-4 rounded-2xl glass-card text-emerald-deep font-semibold text-sm sm:text-base flex items-center justify-center gap-2 hover:bg-white transition-all">
+              <span>Explore 26% &rarr; 80% Case Studies</span>
+              <i data-lucide="arrow-down-right" class="w-4 h-4 text-sage-mist"></i>
+            </a>
+          </div>
+
+          <!-- Interactive Curriculum Quick-Selector Pills -->
+          <div class="pt-4 border-t border-emerald-deep/10">
+            <p class="font-mono text-[11px] uppercase tracking-widest text-sage-mist mb-3">
+              Select Board Track to Inspect Syllabus Focus:
+            </p>
+            <div class="flex flex-wrap gap-2" id="hero-board-pills">
+              <button data-board="ibdp" class="board-pill px-3.5 py-2 rounded-xl text-xs font-mono font-medium bg-emerald-deep text-pearl transition-all cursor-pointer">
+                IBDP (HL &amp; SL)
+              </button>
+              <button data-board="igcse" class="board-pill px-3.5 py-2 rounded-xl text-xs font-mono font-medium glass-card text-emerald-deep hover:bg-sage-tint transition-all cursor-pointer">
+                IGCSE Cambridge / Edexcel
+              </button>
+              <button data-board="neet" class="board-pill px-3.5 py-2 rounded-xl text-xs font-mono font-medium glass-card text-emerald-deep hover:bg-sage-tint transition-all cursor-pointer">
+                NEET UG Medical
+              </button>
+              <button data-board="cbse-icse" class="board-pill px-3.5 py-2 rounded-xl text-xs font-mono font-medium glass-card text-emerald-deep hover:bg-sage-tint transition-all cursor-pointer">
+                ICSE &amp; CBSE (9–12)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Interactive 3D Specimen HUD Card (Floats over 3D DNA Canvas) -->
+        <div class="lg:col-span-5 flex flex-col items-end justify-between space-y-4 hero-stagger">
+          <!-- Interactive Specimen Control & Live Preview Card -->
+          <div class="w-full max-w-md glass-card rounded-3xl p-6 shadow-atelier border border-emerald-deep/10 space-y-5">
+            <div class="flex items-center justify-between border-b border-emerald-deep/10 pb-3.5">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-champagne-gold"></span>
+                <span class="font-mono text-xs uppercase tracking-wider text-emerald-deep font-semibold" id="specimen-title">
+                  IBDP HL/SL &bull; Molecular Blueprint
+                </span>
+              </div>
+              <span class="font-mono text-[11px] px-2.5 py-1 rounded-lg bg-sage-tint text-emerald-forest">
+                3D Interactive
+              </span>
+            </div>
+
+            <!-- Dynamic Board Insight Display -->
+            <div id="specimen-content" class="space-y-3">
+              <h3 class="font-serif text-2xl font-semibold text-emerald-deep leading-snug">
+                Data-Based Questions, IA Mentorship &amp; Early Syllabus Mastery
+              </h3>
+              <p class="text-sm text-emerald-forest/80 leading-relaxed">
+                Complete the entire IBDP Biology curriculum ahead of schedule so your final months are dedicated purely to past-paper mastery, Internal Assessment refinement, and biochemical clarity.
+              </p>
+              <div class="grid grid-cols-2 gap-2.5 pt-2">
+                <div class="p-3 rounded-xl bg-ivory border border-emerald-deep/5">
+                  <div class="font-mono text-[10px] uppercase text-sage-mist">Core Edge</div>
+                  <div class="font-semibold text-xs text-emerald-deep mt-0.5">IA &amp; DBQ Precision</div>
+                </div>
+                <div class="p-3 rounded-xl bg-ivory border border-emerald-deep/5">
+                  <div class="font-mono text-[10px] uppercase text-sage-mist">Format</div>
+                  <div class="font-semibold text-xs text-emerald-deep mt-0.5">Global 1-on-1 &amp; Small Batch</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3D Scene Interactive Controls -->
+            <div class="pt-3 border-t border-emerald-deep/10 flex items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5">
+                <button id="btn-mode-helix" class="px-3 py-1.5 rounded-lg text-[11px] font-mono font-medium bg-emerald-deep text-pearl transition-colors cursor-pointer">
+                  DNA Helix
+                </button>
+                <button id="btn-mode-cell" class="px-3 py-1.5 rounded-lg text-[11px] font-mono font-medium bg-sage-tint text-emerald-deep hover:bg-sage-soft transition-colors cursor-pointer">
+                  Cellular Orbit
+                </button>
+              </div>
+              <span class="font-mono text-[10px] text-sage-mist flex items-center gap-1">
+                <i data-lucide="move" class="w-3 h-3"></i> Move cursor to tilt
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 3. BENTO-GRID CURRICULUM & PROGRAMS SHOWCASE                          -->
+    <!-- ===================================================================== -->
+    <section id="programs" class="py-20 lg:py-28 px-4 sm:px-6 lg:px-8 relative">
+      <div class="max-w-7xl mx-auto">
+        <!-- Section Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6 reveal-up">
+          <div class="max-w-2xl">
+            <span class="font-mono text-xs uppercase tracking-[0.2em] text-champagne-dark font-semibold">
+              01 &bull; Academic Architecture
+            </span>
+            <h2 class="font-serif text-4xl sm:text-5xl font-semibold text-emerald-deep mt-2 leading-tight">
+              Tailored Mastery Across Five Global &amp; National Curricula
+            </h2>
+          </div>
+          <p class="text-sm sm:text-base text-emerald-forest/80 max-w-md">
+            Whether preparing for India's toughest medical entrance or international baccalaureate diplomas in Europe and the Middle East, every lesson is engineered around exam-board mark schemes.
+          </p>
+        </div>
+
+        <!-- Asymmetric Bento Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+          
+          <!-- Bento Card 1: IBDP Biology (HL & SL) - Large Featured Card -->
+          <div class="md:col-span-7 bento-card glass-card rounded-3xl p-7 sm:p-9 shadow-atelier flex flex-col justify-between reveal-up">
+            <div>
+              <div class="flex items-center justify-between gap-4 mb-6">
+                <span class="px-3.5 py-1.5 rounded-full bg-emerald-deep text-champagne-light font-mono text-xs font-medium">
+                  International Baccalaureate
+                </span>
+                <span class="font-mono text-xs text-sage-mist">HL &amp; SL &bull; Global Online</span>
+              </div>
+              <h3 class="font-serif text-3xl sm:text-4xl font-semibold text-emerald-deep mb-3">
+                IBDP Biology (Higher &amp; Standard Level)
+              </h3>
+              <p class="text-emerald-forest/85 text-sm sm:text-base leading-relaxed mb-6">
+                Renowned among IB students worldwide for transforming dense molecular genetics, metabolism, and ecology into crystal-clear visual logic. We finish the syllabus early so students master Paper 1, Paper 2 data-based questions, and Internal Assessments with calm authority.
+              </p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-5 border-t border-emerald-deep/10">
+              <div class="flex items-start gap-2.5">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-champagne-dark shrink-0 mt-0.5"></i>
+                <span class="text-xs font-medium text-emerald-deep">Internal Assessment (IA) Research Guidance</span>
+              </div>
+              <div class="flex items-start gap-2.5">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-champagne-dark shrink-0 mt-0.5"></i>
+                <span class="text-xs font-medium text-emerald-deep">Data-Based Question (DBQ) Drills</span>
+              </div>
+              <div class="flex items-start gap-2.5">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-champagne-dark shrink-0 mt-0.5"></i>
+                <span class="text-xs font-medium text-emerald-deep">Early Syllabus Completion Strategy</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bento Card 2: IGCSE & Edexcel International -->
+          <div class="md:col-span-5 bento-card glass-dark text-pearl rounded-3xl p-7 sm:p-9 shadow-atelier flex flex-col justify-between reveal-up">
+            <div>
+              <div class="flex items-center justify-between gap-4 mb-6">
+                <span class="px-3.5 py-1.5 rounded-full bg-champagne-gold/20 text-champagne-light border border-champagne-gold/30 font-mono text-xs font-medium">
+                  Cambridge &amp; Edexcel
+                </span>
+                <span class="font-mono text-xs text-sage-mist">Year 9 – 11</span>
+              </div>
+              <h3 class="font-serif text-3xl font-semibold text-pearl mb-3">
+                IGCSE International Turnaround Program
+              </h3>
+              <p class="text-sage-soft/90 text-sm leading-relaxed mb-6">
+                Proven track record of turning struggling grades (as low as 26%) into top-tier A/A* mock and board performances (80%+). Concise revision notes replace overwhelming textbooks, tailored to UK, Spain, UAE, and Mumbai timezones.
+              </p>
+            </div>
+            <div class="flex items-center justify-between pt-5 border-t border-white/10">
+              <span class="font-mono text-xs text-champagne-light">Extended &amp; Core Tracks</span>
+              <button onclick="openBookingModal('IGCSE Biology')" class="text-xs font-mono uppercase tracking-wider text-champagne-gold hover:text-white flex items-center gap-1 cursor-pointer">
+                <span>Enroll Track</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bento Card 3: NEET UG Medical Entrance -->
+          <div class="md:col-span-5 bento-card glass-card rounded-3xl p-7 sm:p-9 shadow-atelier flex flex-col justify-between reveal-up">
+            <div>
+              <div class="flex items-center justify-between gap-4 mb-6">
+                <span class="px-3.5 py-1.5 rounded-full bg-sage-tint text-emerald-deep font-mono text-xs font-semibold">
+                  Medical Entrance
+                </span>
+                <span class="font-mono text-xs text-sage-mist">Class 11, 12 &amp; Droppers</span>
+              </div>
+              <h3 class="font-serif text-3xl font-semibold text-emerald-deep mb-3">
+                NEET UG 360/360 Biology Precision
+              </h3>
+              <p class="text-emerald-forest/85 text-sm leading-relaxed mb-6">
+                Line-by-line NCERT conceptual decoding paired with high-frequency assertion-reason drills, human physiology flowcharts, and full-length NTA-pattern mock test analytics.
+              </p>
+            </div>
+            <div class="flex items-center justify-between pt-5 border-t border-emerald-deep/10">
+              <span class="font-mono text-xs text-emerald-moss font-medium">NCERT + Analytical MCQs</span>
+              <button onclick="openBookingModal('NEET UG Biology')" class="text-xs font-mono uppercase tracking-wider text-emerald-deep font-semibold hover:text-champagne-dark flex items-center gap-1 cursor-pointer">
+                <span>Request Syllabus</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bento Card 4: ICSE & CBSE (Class 9-12) + Signature Pedagogy -->
+          <div class="md:col-span-7 bento-card glass-card rounded-3xl p-7 sm:p-9 shadow-atelier flex flex-col justify-between reveal-up">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start">
+              <div>
+                <span class="px-3.5 py-1.5 rounded-full bg-sage-tint text-emerald-deep font-mono text-xs font-semibold inline-block mb-5">
+                  National Boards &amp; Crash Courses
+                </span>
+                <h3 class="font-serif text-3xl font-semibold text-emerald-deep mb-3">
+                  ICSE &amp; CBSE Board Excellence (Class 9–12)
+                </h3>
+                <p class="text-emerald-forest/85 text-sm leading-relaxed">
+                  Structured board-answer framing, labelled diagram mastery, and high-impact pre-board crash courses designed to maximize every half-mark on CBSE and ICSE answer scripts.
+                </p>
+              </div>
+              <div class="bg-ivory rounded-2xl p-5 border border-emerald-deep/10 space-y-3.5">
+                <div class="font-mono text-[11px] uppercase tracking-wider text-champagne-dark font-semibold">
+                  The Manali Method &bull; Core Pillars
+                </div>
+                <div class="flex items-start gap-3">
+                  <div class="w-7 h-7 rounded-lg bg-emerald-deep text-champagne-gold flex items-center justify-center shrink-0 mt-0.5">
+                    <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-bold text-emerald-deep">Curated Micro-Notes</h4>
+                    <p class="text-[11px] text-emerald-forest/75 mt-0.5">Distilled visual summaries that eliminate bulky textbook overwhelm.</p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-3">
+                  <div class="w-7 h-7 rounded-lg bg-emerald-deep text-champagne-gold flex items-center justify-center shrink-0 mt-0.5">
+                    <i data-lucide="microscope" class="w-3.5 h-3.5"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-bold text-emerald-deep">1-on-1 Doubt Resolution</h4>
+                    <p class="text-[11px] text-emerald-forest/75 mt-0.5">Patient, zero-judgment mentoring until every mechanism clicks.</p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-3">
+                  <div class="w-7 h-7 rounded-lg bg-emerald-deep text-champagne-gold flex items-center justify-center shrink-0 mt-0.5">
+                    <i data-lucide="clipboard-check" class="w-3.5 h-3.5"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-bold text-emerald-deep">Weekly Test Series</h4>
+                    <p class="text-[11px] text-emerald-forest/75 mt-0.5">Continuous past-paper benchmarking with detailed feedback.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 4. METHODOLOGY TIMELINE & MENTORSHIP PHILOSOPHY                       -->
+    <!-- ===================================================================== -->
+    <section id="methodology" class="py-20 lg:py-24 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto glass-dark rounded-[2.25rem] p-8 sm:p-12 lg:p-16 text-pearl shadow-atelier relative overflow-hidden">
+        <!-- Decorative Subtle Radial Glow -->
+        <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-champagne-gold/10 blur-3xl pointer-events-none"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-10">
+          <div class="lg:col-span-5 space-y-5 reveal-up">
+            <span class="font-mono text-xs uppercase tracking-[0.2em] text-champagne-gold">
+              02 &bull; Pedagogical Precision
+            </span>
+            <h2 class="font-serif text-4xl sm:text-5xl font-semibold leading-tight">
+              Why Students Stop Memorizing &amp; Start <span class="italic text-champagne-light">Understanding</span>
+            </h2>
+            <p class="text-sage-soft/85 text-sm sm:text-base leading-relaxed">
+              Biology isn't a list of isolated facts—it is an interconnected system of cause and effect. Miss Manali breaks down intimidating pathways into intuitive visual stories backed by rigorous exam technique.
+            </p>
+            <div class="pt-2">
+              <button onclick="openBookingModal('Free Diagnostic Assessment')" class="px-6 py-3.5 rounded-xl bg-champagne-gold text-emerald-deep font-semibold text-sm hover:bg-champagne-light transition-colors inline-flex items-center gap-2 cursor-pointer">
+                <span>Book a Concept Trial Class</span>
+                <i data-lucide="calendar" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4 reveal-up">
+            <div class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-2.5">
+              <span class="font-mono text-xs text-champagne-gold">STEP 01</span>
+              <h3 class="font-serif text-2xl font-semibold text-pearl">Diagnostic Gap Mapping</h3>
+              <p class="text-xs sm:text-sm text-sage-soft/80 leading-relaxed">
+                We assess current school papers and conceptual foundations to build a personalized week-by-week roadmap.
+              </p>
+            </div>
+            <div class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-2.5">
+              <span class="font-mono text-xs text-champagne-gold">STEP 02</span>
+              <h3 class="font-serif text-2xl font-semibold text-pearl">Visual First-Principles</h3>
+              <p class="text-xs sm:text-sm text-sage-soft/80 leading-relaxed">
+                Every topic—from cellular respiration to gene expression—is taught through custom diagrams and real-world medical logic.
+              </p>
+            </div>
+            <div class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-2.5">
+              <span class="font-mono text-xs text-champagne-gold">STEP 03</span>
+              <h3 class="font-serif text-2xl font-semibold text-pearl">Bespoke Concise Notes</h3>
+              <p class="text-xs sm:text-sm text-sage-soft/80 leading-relaxed">
+                Students receive crystal-clear, examiner-aligned notes that cut revision time in half while boosting keyword accuracy.
+              </p>
+            </div>
+            <div class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-2.5">
+              <span class="font-mono text-xs text-champagne-gold">STEP 04</span>
+              <h3 class="font-serif text-2xl font-semibold text-pearl">Timed Past-Paper Mastery</h3>
+              <p class="text-xs sm:text-sm text-sage-soft/80 leading-relaxed">
+                Early syllabus completion unlocks dedicated months for mock exams, mark-scheme calibration, and 1-on-1 doubt clinics.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 5. VERIFIED SOCIAL PROOF & GRADE TRANSFORMATION WALL                  -->
+    <!-- ===================================================================== -->
+    <section id="transformations" class="py-20 lg:py-28 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto">
+        <!-- Section Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6 reveal-up">
+          <div>
+            <span class="font-mono text-xs uppercase tracking-[0.2em] text-champagne-dark font-semibold">
+              03 &bull; Verified Google Reviews (5.0 &#9733;)
+            </span>
+            <h2 class="font-serif text-4xl sm:text-5xl font-semibold text-emerald-deep mt-2 leading-tight">
+              Documented Grade Transformations
+            </h2>
+          </div>
+          <div class="glass-card px-5 py-3.5 rounded-2xl flex items-center gap-4">
+            <div class="text-right">
+              <div class="font-serif text-2xl font-bold text-emerald-deep leading-none">5.0 / 5.0</div>
+              <div class="font-mono text-[11px] text-sage-mist mt-1">128 Google Reviews</div>
+            </div>
+            <div class="flex text-champagne-gold">
+              <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+              <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+              <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+              <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+              <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonials Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <!-- Featured Transformation Card: 26% -> 80% -->
+          <article class="bento-card glass-card rounded-3xl p-7 shadow-atelier flex flex-col justify-between border-champagne-gold/30 reveal-up">
+            <div>
+              <div class="flex items-center justify-between mb-5">
+                <span class="px-3 py-1 rounded-lg bg-emerald-deep text-champagne-light font-mono text-xs font-semibold">
+                  26% &rarr; 80% Jump
+                </span>
+                <span class="font-mono text-[11px] text-sage-mist">IGCSE Edexcel &bull; Spain</span>
+              </div>
+              <p class="font-serif italic text-xl text-emerald-deep leading-relaxed mb-5">
+                &ldquo;Miss Manali truly transformed my daughter Anushree&rsquo;s approach to Biology. Her scores jumped from 26% in Year 10 Finals to 80% in her Year 11 Mocks! Her concise notes helped tremendously instead of referring to bulky textbooks.&rdquo;
+              </p>
+            </div>
+            <div class="pt-4 border-t border-emerald-deep/10 flex items-center justify-between">
+              <div>
+                <div class="font-semibold text-sm text-emerald-deep">Parent of Anushree</div>
+                <div class="font-mono text-[11px] text-sage-mist">International Student (Spain)</div>
+              </div>
+              <div class="flex text-champagne-gold">
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              </div>
+            </div>
+          </article>
+
+          <!-- IBDP HL/SL Candidate Card -->
+          <article class="bento-card glass-card rounded-3xl p-7 shadow-atelier flex flex-col justify-between reveal-up">
+            <div>
+              <div class="flex items-center justify-between mb-5">
+                <span class="px-3 py-1 rounded-lg bg-sage-tint text-emerald-deep font-mono text-xs font-semibold">
+                  IBDP HL &amp; SL Mastery
+                </span>
+                <span class="font-mono text-[11px] text-sage-mist">Verified Review</span>
+              </div>
+              <p class="font-serif italic text-xl text-emerald-deep leading-relaxed mb-5">
+                &ldquo;From biochemistry and genetics to human physiology, she makes the toughest IBDP topics clear and logical. We completed the entire syllabus well ahead of exams, giving me ample time for past papers, data-based questions, and IA guidance.&rdquo;
+              </p>
+            </div>
+            <div class="pt-4 border-t border-emerald-deep/10 flex items-center justify-between">
+              <div>
+                <div class="font-semibold text-sm text-emerald-deep">IBDP Biology Scholar</div>
+                <div class="font-mono text-[11px] text-sage-mist">May/June Exam Cohort</div>
+              </div>
+              <div class="flex text-champagne-gold">
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              </div>
+            </div>
+          </article>
+
+          <!-- CBSE Class 12 & Flexible Global Support Card -->
+          <article class="bento-card glass-card rounded-3xl p-7 shadow-atelier flex flex-col justify-between reveal-up">
+            <div>
+              <div class="flex items-center justify-between mb-5">
+                <span class="px-3 py-1 rounded-lg bg-sage-tint text-emerald-deep font-mono text-xs font-semibold">
+                  Crash Course &amp; Doubts
+                </span>
+                <span class="font-mono text-[11px] text-sage-mist">CBSE Class 12</span>
+              </div>
+              <p class="font-serif italic text-xl text-emerald-deep leading-relaxed mb-5">
+                &ldquo;Joined for the Class 12 Biology crash course. Even with limited time, every concept was explained clearly and thoroughly. Regular tests and dedicated doubt-solving sessions boosted my confidence tremendously.&rdquo;
+              </p>
+            </div>
+            <div class="pt-4 border-t border-emerald-deep/10 flex items-center justify-between">
+              <div>
+                <div class="font-semibold text-sm text-emerald-deep">Class 12 Board Candidate</div>
+                <div class="font-mono text-[11px] text-sage-mist">Mumbai, India</div>
+              </div>
+              <div class="flex text-champagne-gold">
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 6. INTERACTIVE LOCATION, SCHEDULE & CONCIERGE                         -->
+    <!-- ===================================================================== -->
+    <section id="concierge" class="py-20 lg:py-28 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          
+          <!-- Left: Center Coordinates, Live Status & Embedded Google Map -->
+          <div class="lg:col-span-6 glass-card rounded-3xl p-7 sm:p-9 shadow-atelier flex flex-col justify-between space-y-6 reveal-up">
+            <div class="space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-mono text-xs uppercase tracking-[0.2em] text-champagne-dark font-semibold">
+                  04 &bull; Mumbai Atelier &amp; Global Desk
+                </span>
+                <!-- Live Open Status Indicator -->
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200">
+                  <span class="relative w-2 h-2 rounded-full bg-emerald-500 live-dot"></span>
+                  <span class="font-mono text-[11px] font-semibold text-emerald-900">Open 24 Hours &bull; Flexible Timezones</span>
+                </div>
+              </div>
+
+              <h2 class="font-serif text-3xl sm:text-4xl font-semibold text-emerald-deep">
+                Visit Mazgaon Center or Connect Online Worldwide
+              </h2>
+
+              <div class="space-y-3 pt-2 text-sm text-emerald-forest/90">
+                <div class="flex items-start gap-3">
+                  <i data-lucide="map-pin" class="w-5 h-5 text-champagne-dark shrink-0 mt-0.5"></i>
+                  <div>
+                    <strong class="text-emerald-deep block">Mazgaon Academic Center:</strong>
+                    <span>Honeycomb, 17/6, Dr Mascarenhas Rd, near St Isabell School, Anjeer Wadi, Thakkar Estate, Mazgaon, Mumbai, Maharashtra 400010</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <i data-lucide="phone-call" class="w-5 h-5 text-champagne-dark shrink-0"></i>
+                  <div>
+                    <strong class="text-emerald-deep">Direct Admissions &amp; WhatsApp:</strong>
+                    <a href="tel:+917715893198" class="font-mono font-semibold text-emerald-deep hover:text-champagne-dark ml-1">+91 77158 93198</a>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <i data-lucide="globe" class="w-5 h-5 text-champagne-dark shrink-0"></i>
+                  <span>Serving Mumbai in-person &amp; live 1-on-1 batches across India, UAE, UK, Spain &amp; Singapore.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- One-Click Action Buttons -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <a href="tel:+917715893198" class="px-4 py-3 rounded-xl bg-emerald-deep text-pearl text-xs font-mono font-semibold flex items-center justify-center gap-2 hover:bg-emerald-forest transition-colors">
+                <i data-lucide="phone" class="w-3.5 h-3.5 text-champagne-gold"></i>
+                <span>Call Now</span>
+              </a>
+              <a href="https://wa.me/917715893198?text=Hello%20Miss%20Manali,%20I%20would%20like%20to%20inquire%20about%20Biology%20classes." target="_blank" rel="noopener noreferrer" class="px-4 py-3 rounded-xl bg-[#1F5440] text-pearl text-xs font-mono font-semibold flex items-center justify-center gap-2 hover:opacity-95 transition-opacity">
+                <i data-lucide="message-circle" class="w-3.5 h-3.5 text-champagne-light"></i>
+                <span>WhatsApp</span>
+              </a>
+              <a href="https://www.google.com/maps/search/?api=1&query=Manali's+Biology+World+Mazgaon+Mumbai" target="_blank" rel="noopener noreferrer" class="px-4 py-3 rounded-xl bg-sage-tint text-emerald-deep text-xs font-mono font-semibold flex items-center justify-center gap-2 hover:bg-sage-soft transition-colors">
+                <i data-lucide="navigation" class="w-3.5 h-3.5 text-champagne-dark"></i>
+                <span>Directions</span>
+              </a>
+            </div>
+
+            <!-- Embedded Styled Google Maps Frame -->
+            <div class="w-full h-56 rounded-2xl overflow-hidden border border-emerald-deep/10 shadow-inner">
+              <iframe
+                title="Manali's Biology World Location Map - Mazgaon, Mumbai"
+                src="https://www.google.com/maps?q=Manali's+Biology+World,+Dr+Mascarenhas+Rd,+Mazgaon,+Mumbai+400010&output=embed"
+                class="w-full h-full border-0 filter contrast-[1.02] saturate-[0.9]"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+              </iframe>
+            </div>
+          </div>
+
+          <!-- Right: Interactive 1-on-1 Demo Class & Diagnostic Concierge Form -->
+          <div class="lg:col-span-6 glass-card rounded-3xl p-7 sm:p-9 shadow-atelier flex flex-col justify-between reveal-up">
+            <div>
+              <span class="font-mono text-xs uppercase tracking-[0.2em] text-champagne-dark font-semibold">
+                Admissions Concierge
+              </span>
+              <h3 class="font-serif text-3xl sm:text-4xl font-semibold text-emerald-deep mt-2 mb-2">
+                Book a 1-on-1 Demo &amp; Syllabus Consultation
+              </h3>
+              <p class="text-sm text-emerald-forest/80 mb-6">
+                Select your curriculum and preferred learning mode below to generate an instant priority booking request directly with Miss Manali.
+              </p>
+
+              <form id="concierge-form" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label for="student-name" class="block font-mono text-[11px] uppercase tracking-wider text-emerald-deep font-semibold mb-1.5">
+                      Student / Parent Name *
+                    </label>
+                    <input type="text" id="student-name" required placeholder="e.g., Aarav Sharma"
+                      class="w-full px-4 py-3 rounded-xl bg-ivory border border-emerald-deep/15 text-sm text-emerald-deep placeholder:text-sage-mist focus:outline-none focus:border-champagne-gold transition-colors" />
+                  </div>
+                  <div>
+                    <label for="student-grade" class="block font-mono text-[11px] uppercase tracking-wider text-emerald-deep font-semibold mb-1.5">
+                      Current Grade / Target Year *
+                    </label>
+                    <input type="text" id="student-grade" required placeholder="e.g., IBDP Year 1 / Class 12"
+                      class="w-full px-4 py-3 rounded-xl bg-ivory border border-emerald-deep/15 text-sm text-emerald-deep placeholder:text-sage-mist focus:outline-none focus:border-champagne-gold transition-colors" />
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label for="board-select" class="block font-mono text-[11px] uppercase tracking-wider text-emerald-deep font-semibold mb-1.5">
+                      Curriculum / Board *
+                    </label>
+                    <select id="board-select"
+                      class="w-full px-4 py-3 rounded-xl bg-ivory border border-emerald-deep/15 text-sm text-emerald-deep focus:outline-none focus:border-champagne-gold transition-colors">
+                      <option value="IBDP Biology (HL / SL)">IBDP Biology (HL / SL)</option>
+                      <option value="IGCSE (Cambridge / Edexcel)">IGCSE (Cambridge / Edexcel)</option>
+                      <option value="NEET UG Medical Prep">NEET UG Medical Prep</option>
+                      <option value="CBSE Class 9–12">CBSE Class 9–12</option>
+                      <option value="ICSE Class 9–10">ICSE Class 9–10</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="mode-select" class="block font-mono text-[11px] uppercase tracking-wider text-emerald-deep font-semibold mb-1.5">
+                      Preferred Format *
+                    </label>
+                    <select id="mode-select"
+                      class="w-full px-4 py-3 rounded-xl bg-ivory border border-emerald-deep/15 text-sm text-emerald-deep focus:outline-none focus:border-champagne-gold transition-colors">
+                      <option value="Global Online (1-on-1 / Small Batch)">Global Online (1-on-1 / Small Batch)</option>
+                      <option value="Offline at Mazgaon Center, Mumbai">Offline at Mazgaon Center, Mumbai</option>
+                      <option value="Crash Course / IA Guidance">Crash Course / IA Guidance</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label for="focus-notes" class="block font-mono text-[11px] uppercase tracking-wider text-emerald-deep font-semibold mb-1.5">
+                    Specific Goals or Topics (Optional)
+                  </label>
+                  <textarea id="focus-notes" rows="3" placeholder="e.g., Need help with IBDP Internal Assessment, genetics, or improving mock scores..."
+                    class="w-full px-4 py-3 rounded-xl bg-ivory border border-emerald-deep/15 text-sm text-emerald-deep placeholder:text-sage-mist focus:outline-none focus:border-champagne-gold transition-colors"></textarea>
+                </div>
+
+                <button type="submit"
+                  class="w-full py-4 px-6 rounded-2xl bg-emerald-deep text-pearl font-semibold text-sm sm:text-base flex items-center justify-center gap-2.5 hover:bg-emerald-forest transition-all shadow-atelier hover:shadow-gold-glow cursor-pointer">
+                  <span>Send Priority Demo Request via WhatsApp</span>
+                  <i data-lucide="send" class="w-4 h-4 text-champagne-gold"></i>
+                </button>
+              </form>
+            </div>
+
+            <!-- Instant Confirmation Message Box (Replaces any browser alert) -->
+            <div id="booking-confirmation" class="hidden mt-5 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs sm:text-sm space-y-2">
+              <div class="flex items-center gap-2 font-semibold text-emerald-900">
+                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+                <span>Priority Consultation Summary Prepared!</span>
+              </div>
+              <p id="confirmation-text" class="leading-relaxed text-emerald-800"></p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- 7. LUXURY EDITORIAL FOOTER                                            -->
+  <!-- ===================================================================== -->
+  <footer class="relative z-10 bg-emerald-deep text-pearl pt-16 pb-12 px-4 sm:px-6 lg:px-8 border-t border-champagne-gold/20">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-white/10">
+        
+        <div class="md:col-span-5 space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-champagne-gold/15 border border-champagne-gold/40 flex items-center justify-center text-champagne-gold">
+              <svg class="w-5 h-5" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 4C8 10 20 10 20 14C20 18 8 18 8 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M20 4C20 10 8 10 8 14C8 18 20 18 20 24" stroke="#E6D2A6" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="font-serif font-bold text-2xl text-pearl">Manali's Biology World</span>
+          </div>
+          <p class="text-sm text-sage-soft/80 leading-relaxed max-w-md">
+            An academic life-sciences atelier dedicated to conceptual clarity, visual micro-notes, and transformative mentorship for NEET, IBDP, IGCSE, ICSE, and CBSE students in Mumbai and across the globe.
+          </p>
+          <div class="font-mono text-xs text-champagne-light">
+            &#9733; 5.0 Rated on Google (128 Verified Reviews)
+          </div>
+        </div>
+
+        <div class="md:col-span-3 space-y-3">
+          <h4 class="font-mono text-xs uppercase tracking-widest text-champagne-gold">Curricula</h4>
+          <ul class="space-y-2 text-sm text-sage-soft/85">
+            <li><a href="#programs" class="hover:text-champagne-light transition-colors">IBDP Biology (HL &amp; SL)</a></li>
+            <li><a href="#programs" class="hover:text-champagne-light transition-colors">IGCSE Cambridge &amp; Edexcel</a></li>
+            <li><a href="#programs" class="hover:text-champagne-light transition-colors">NEET UG Medical Entrance</a></li>
+            <li><a href="#programs" class="hover:text-champagne-light transition-colors">ICSE &amp; CBSE (Class 9–12)</a></li>
+          </ul>
+        </div>
+
+        <div class="md:col-span-4 space-y-3">
+          <h4 class="font-mono text-xs uppercase tracking-widest text-champagne-gold">Mazgaon &amp; Global Desk</h4>
+          <p class="text-sm text-sage-soft/85 leading-relaxed">
+            Honeycomb, 17/6, Dr Mascarenhas Rd, near St Isabell School, Mazgaon, Mumbai 400010
+          </p>
+          <p class="font-mono text-sm text-pearl">
+            <a href="tel:+917715893198" class="hover:text-champagne-gold transition-colors">+91 77158 93198</a>
+          </p>
+          <p class="font-mono text-xs text-sage-mist">
+            Open 24 Hours &bull; Flexible International Scheduling
+          </p>
+        </div>
+
+      </div>
+
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-sage-mist">
+        <p>&copy; <span id="current-year"></span> Manali's Biology World. All rights reserved.</p>
+        <p>Mazgaon, Mumbai &bull; Global Online Biology Mentorship</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- INTERACTIVE BOOKING MODAL (Custom UI, Zero Browser Alerts)            -->
+  <!-- ===================================================================== -->
+  <div id="booking-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-emerald-deep/60 backdrop-blur-md">
+    <div class="bg-pearl rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-emerald-deep/15 relative animate-fadeIn">
+      <button onclick="closeBookingModal()" aria-label="Close modal" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-sage-tint text-emerald-deep flex items-center justify-center hover:bg-emerald-deep hover:text-pearl transition-colors cursor-pointer">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+
+      <span class="font-mono text-[11px] uppercase tracking-widest text-champagne-dark font-semibold">
+        1-on-1 Academic Consultation
+      </span>
+      <h3 class="font-serif text-3xl font-semibold text-emerald-deep mt-1 mb-2">
+        Reserve Your Diagnostic Session
+      </h3>
+      <p class="text-xs sm:text-sm text-emerald-forest/80 mb-5">
+        Connect directly with Miss Manali for <span id="modal-board-label" class="font-semibold text-emerald-deep">IBDP / IGCSE / NEET</span> mentorship.
+      </p>
+
+      <div class="space-y-3">
+        <a id="modal-whatsapp-link" href="https://wa.me/917715893198?text=Hello%20Miss%20Manali,%20I%20would%20like%20to%20book%20a%201-on-1%20Biology%20diagnostic%20session." target="_blank" rel="noopener noreferrer"
+          class="w-full py-3.5 px-5 rounded-2xl bg-emerald-deep text-pearl font-semibold text-sm flex items-center justify-center gap-2.5 hover:bg-emerald-forest transition-all shadow-md">
+          <i data-lucide="message-circle" class="w-4 h-4 text-champagne-gold"></i>
+          <span>Chat on WhatsApp (+91 77158 93198)</span>
+        </a>
+        <a href="tel:+917715893198"
+          class="w-full py-3.5 px-5 rounded-2xl bg-sage-tint text-emerald-deep font-semibold text-sm flex items-center justify-center gap-2.5 hover:bg-sage-soft transition-all">
+          <i data-lucide="phone-call" class="w-4 h-4 text-champagne-dark"></i>
+          <span>Call Mazgaon Center Directly</span>
+        </a>
+        <button onclick="scrollToFormFromModal()"
+          class="w-full py-3 px-5 rounded-2xl border border-emerald-deep/15 text-emerald-deep font-mono text-xs uppercase tracking-wider hover:bg-ivory transition-all cursor-pointer">
+          Or Fill Detailed Syllabus Form Below
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- JAVASCRIPT: THREE.JS 3D DNA HELIX + GSAP + INTERACTIVE UI LOGIC       -->
+  <!-- ===================================================================== -->
+  <script>
+    // Initialize Lucide Icons & Current Year
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+      const yearEl = document.getElementById('current-year');
+      if (yearEl) yearEl.textContent = new Date().getFullYear();
+    });
+
+    // =========================================================================
+    // 1. INTERACTIVE BOARD DATA & HERO SPECIMEN INSPECTOR
+    // =========================================================================
+    const boardSpecs = {
+      'ibdp': {
+        tag: 'IBDP HL/SL • Molecular Blueprint',
+        title: 'Data-Based Questions, IA Mentorship & Early Syllabus Mastery',
+        desc: 'Complete the entire IBDP Biology curriculum ahead of schedule so your final months are dedicated purely to past-paper mastery, Internal Assessment refinement, and biochemical clarity.',
+        edge: 'IA & DBQ Precision',
+        format: 'Global 1-on-1 & Small Batch'
+      },
+      'igcse': {
+        tag: 'IGCSE Cambridge & Edexcel • Grade Turnaround',
+        title: 'Structured Visual Notes That Turn 26% Into 80%+ Mastery',
+        desc: 'Designed for Year 9–11 international learners across Mumbai, UAE, UK, and Spain. Concise revision sheets replace bulky textbooks with clear mark-scheme precision.',
+        edge: 'Proven 54% Score Lift',
+        format: 'Timezone-Flexible Live Online'
+      },
+      'neet': {
+        tag: 'NEET UG Medical • NCERT Line-by-Line',
+        title: '360/360 Analytical Biology & Human Physiology Mastery',
+        desc: 'Deep conceptual decoding of every NCERT line, diagram, and assertion-reason trap—backed by high-frequency NTA mock tests and 1-on-1 doubt resolution.',
+        edge: 'NCERT + Assertion-Reason',
+        format: 'Mazgaon Center & Live Online'
+      },
+      'cbse-icse': {
+        tag: 'ICSE & CBSE Class 9–12 • Board Excellence',
+        title: 'Diagram-Driven Frameworks & High-Velocity Crash Courses',
+        desc: 'Master structured board answers, labelled biological diagrams, and regular test series that build unshakeable exam confidence before finals.',
+        edge: 'Full-Mark Answer Framing',
+        format: 'Regular & Crash Batches'
+      }
+    };
+
+    const boardPills = document.querySelectorAll('.board-pill');
+    boardPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        boardPills.forEach(p => {
+          p.classList.remove('bg-emerald-deep', 'text-pearl');
+          p.classList.add('glass-card', 'text-emerald-deep');
+        });
+        pill.classList.remove('glass-card', 'text-emerald-deep');
+        pill.classList.add('bg-emerald-deep', 'text-pearl');
+
+        const key = pill.getAttribute('data-board');
+        const data = boardSpecs[key];
+        if (data) {
+          document.getElementById('specimen-title').textContent = data.tag;
+          document.getElementById('specimen-content').innerHTML = `
+            <h3 class="font-serif text-2xl font-semibold text-emerald-deep leading-snug">${data.title}</h3>
+            <p class="text-sm text-emerald-forest/80 leading-relaxed">${data.desc}</p>
+            <div class="grid grid-cols-2 gap-2.5 pt-2">
+              <div class="p-3 rounded-xl bg-ivory border border-emerald-deep/5">
+                <div class="font-mono text-[10px] uppercase text-sage-mist">Core Edge</div>
+                <div class="font-semibold text-xs text-emerald-deep mt-0.5">${data.edge}</div>
+              </div>
+              <div class="p-3 rounded-xl bg-ivory border border-emerald-deep/5">
+                <div class="font-mono text-[10px] uppercase text-sage-mist">Format</div>
+                <div class="font-semibold text-xs text-emerald-deep mt-0.5">${data.format}</div>
+              </div>
+            </div>
+          `;
+        }
+      });
+    });
+
+    // =========================================================================
+    // 2. BOOKING MODAL & CONCIERGE WHATSAPP FORM
+    // =========================================================================
+    function openBookingModal(boardLabel) {
+      const modal = document.getElementById('booking-modal');
+      const labelEl = document.getElementById('modal-board-label');
+      const waLink = document.getElementById('modal-whatsapp-link');
+      if (labelEl) labelEl.textContent = boardLabel;
+      if (waLink) {
+        const msg = encodeURIComponent(`Hello Miss Manali, I would like to book a 1-on-1 Biology diagnostic session for ${boardLabel}.`);
+        waLink.href = `https://wa.me/917715893198?text=${msg}`;
+      }
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeBookingModal() {
+      const modal = document.getElementById('booking-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function scrollToFormFromModal() {
+      closeBookingModal();
+      const target = document.getElementById('concierge');
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('booking-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'booking-modal') closeBookingModal();
+    });
+
+    // Handle Concierge Form Submission
+    document.getElementById('concierge-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('student-name').value.trim();
+      const grade = document.getElementById('student-grade').value.trim();
+      const board = document.getElementById('board-select').value;
+      const mode = document.getElementById('mode-select').value;
+      const notes = document.getElementById('focus-notes').value.trim();
+
+      const summary = `Student: ${name} (${grade}) | Board: ${board} | Mode: ${mode}${notes ? ' | Focus: ' + notes : ''}`;
+      const confBox = document.getElementById('booking-confirmation');
+      const confText = document.getElementById('confirmation-text');
+
+      confText.textContent = `Redirecting your priority request to Miss Manali's WhatsApp desk: "${summary}"`;
+      confBox.classList.remove('hidden');
+
+      const waMessage = encodeURIComponent(
+        `Hello Miss Manali, I would like to book a 1-on-1 Biology Demo Class.\n` +
+        `• Name: ${name}\n` +
+        `• Grade/Year: ${grade}\n` +
+        `• Board: ${board}\n` +
+        `• Format: ${mode}` +
+        (notes ? `\n• Notes: ${notes}` : '')
+      );
+      window.open(`https://wa.me/917715893198?text=${waMessage}`, '_blank', 'noopener,noreferrer');
+    });
+
+    // =========================================================================
+    // 3. PROCEDURAL 3D WEBGL DNA DOUBLE HELIX & CELLULAR CONSTELLATION (THREE.JS)
+    // =========================================================================
+    function initBio3DScene() {
+      const container = document.getElementById('bio-canvas-container');
+      if (!container || !window.THREE) return;
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(0, 0, 22);
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(renderer.domElement);
+
+      // Lighting Rig: Warm Champagne Key Light + Botanical Emerald Rim Light
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+      scene.add(ambientLight);
+
+      const keyLight = new THREE.DirectionalLight(0xfff5e0, 1.25);
+      keyLight.position.set(12, 16, 14);
+      scene.add(keyLight);
+
+      const rimLight = new THREE.PointLight(0x1f5440, 2.2, 45);
+      rimLight.position.set(-10, -8, 10);
+      scene.add(rimLight);
+
+      const goldLight = new THREE.PointLight(0xc8a45d, 1.8, 40);
+      goldLight.position.set(8, 5, 8);
+      scene.add(goldLight);
+
+      // Master Group positioned elegantly to the right on desktop, centered subtly on mobile
+      const bioGroup = new THREE.Group();
+      bioGroup.position.x = window.innerWidth >= 1024 ? 5.2 : 0;
+      bioGroup.rotation.z = 0.28;
+      scene.add(bioGroup);
+
+      // Materials
+      const emeraldMat = new THREE.MeshPhysicalMaterial({
+        color: 0x133a2c,
+        roughness: 0.22,
+        metalness: 0.15,
+        clearcoat: 0.8,
+        clearcoatRoughness: 0.15
+      });
+
+      const goldMat = new THREE.MeshPhysicalMaterial({
+        color: 0xc8a45d,
+        roughness: 0.25,
+        metalness: 0.65,
+        clearcoat: 0.9
+      });
+
+      const sageGlassMat = new THREE.MeshPhysicalMaterial({
+        color: 0x7a9a8b,
+        transparent: true,
+        opacity: 0.34,
+        roughness: 0.15,
+        metalness: 0.05
+      });
+
+      const rungMat = new THREE.MeshStandardMaterial({
+        color: 0xdce5e0,
+        roughness: 0.4,
+        metalness: 0.2,
+        transparent: true,
+        opacity: 0.75
+      });
+
+      // Procedural DNA Double Helix Sub-Group
+      const dnaGroup = new THREE.Group();
+      bioGroup.add(dnaGroup);
+
+      const basePairs = 26;
+      const verticalSpacing = 0.62;
+      const radius = 2.35;
+      const twistAngle = 0.36;
+
+      const nodeGeo = new THREE.SphereGeometry(0.24, 20, 20);
+      const rungGeo = new THREE.CylinderGeometry(0.055, 0.055, radius * 2, 12);
+      rungGeo.rotateZ(Math.PI / 2);
+
+      for (let i = 0; i < basePairs; i++) {
+        const y = (i - basePairs / 2) * verticalSpacing;
+        const angle = i * twistAngle;
+
+        const pairHolder = new THREE.Group();
+        pairHolder.position.y = y;
+        pairHolder.rotation.y = angle;
+
+        // Strand A Nucleotide
+        const nodeA = new THREE.Mesh(nodeGeo, i % 2 === 0 ? emeraldMat : goldMat);
+        nodeA.position.x = radius;
+        pairHolder.add(nodeA);
+
+        // Strand B Nucleotide
+        const nodeB = new THREE.Mesh(nodeGeo, i % 2 === 0 ? goldMat : emeraldMat);
+        nodeB.position.x = -radius;
+        pairHolder.add(nodeB);
+
+        // Base-Pair Hydrogen Bond Rung
+        const rung = new THREE.Mesh(rungGeo, rungMat);
+        pairHolder.add(rung);
+
+        dnaGroup.add(pairHolder);
+      }
+
+      // Translucent Cellular Organelle Spheres (Molecular Context)
+      const cellGroup = new THREE.Group();
+      bioGroup.add(cellGroup);
+
+      const organelleConfigs = [
+        { r: 4.8, pos: [0, 0, 0], mat: sageGlassMat },
+        { r: 0.85, pos: [-3.8, 3.2, -1.5], mat: sageGlassMat },
+        { r: 0.65, pos: [3.9, -2.8, 1.4], mat: goldMat },
+        { r: 0.5, pos: [-3.2, -3.6, 1.8], mat: emeraldMat }
+      ];
+
+      organelleConfigs.forEach(cfg => {
+        const mesh = new THREE.Mesh(new THREE.SphereGeometry(cfg.r, 32, 32), cfg.mat);
+        mesh.position.set(...cfg.pos);
+        cellGroup.add(mesh);
+      });
+
+      // Ambient Bio-Luminescent Spore / Molecule Particles
+      const particleCount = 95;
+      const particleGeo = new THREE.BufferGeometry();
+      const positions = new Float32Array(particleCount * 3);
+      for (let i = 0; i < particleCount * 3; i += 3) {
+        positions[i] = (Math.random() - 0.5) * 26;
+        positions[i + 1] = (Math.random() - 0.5) * 24;
+        positions[i + 2] = (Math.random() - 0.5) * 14;
+      }
+      particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+      const particleMat = new THREE.PointsMaterial({
+        color: 0xc8a45d,
+        size: 0.11,
+        transparent: true,
+        opacity: 0.65
+      });
+      const particles = new THREE.Points(particleGeo, particleMat);
+      scene.add(particles);
+
+      // Interactive Mode Toggles (DNA Helix vs Cellular Orbit)
+      let targetCellScale = 0.72;
+      let targetDnaScale = 1.0;
+
+      const btnHelix = document.getElementById('btn-mode-helix');
+      const btnCell = document.getElementById('btn-mode-cell');
+
+      if (btnHelix && btnCell) {
+        btnHelix.addEventListener('click', () => {
+          targetDnaScale = 1.05;
+          targetCellScale = 0.68;
+          btnHelix.className = 'px-3 py-1.5 rounded-lg text-[11px] font-mono font-medium bg-emerald-deep text-pearl transition-colors cursor-pointer';
+          btnCell.className = 'px-3 py-1.5 rounded-lg text-[11px] font-mono font-medium bg-sage-tint text-emerald-deep hover:bg-sage-soft transition-colors cursor-pointer';
+        });
+
+        btnCell.addEventListener('click', () => {
+          targetDnaScale = 0.72;
+          targetCellScale = 1.22;
+          btnCell.className = 'px-3 py-1.5 rounded-lg text-[11px] font-mono font-medium bg-emerald-deep text-pearl transition-colors cursor-pointer';
+          btnHelix.className = 'px-3 py-1.5 rounded-lg text-[11px] font-mono font-medium bg-sage-tint text-emerald-deep hover:bg-sage-soft transition-colors cursor-pointer';
+        });
+      }
+
+      // Mouse Parallax State
+      let mouseX = 0;
+      let mouseY = 0;
+      window.addEventListener('mousemove', (event) => {
+        mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+        mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+      });
+
+      // Touch Parallax Support
+      window.addEventListener('touchmove', (event) => {
+        if (event.touches.length > 0) {
+          mouseX = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+          mouseY = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
+        }
+      }, { passive: true });
+
+      // Responsive Resize Handler
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        bioGroup.position.x = window.innerWidth >= 1024 ? 5.2 : 0;
+      });
+
+      // Scroll-Linked Depth & Gentle Fade via Scroll Position
+      let scrollProgress = 0;
+      window.addEventListener('scroll', () => {
+        const maxScroll = Math.max(1, document.body.scrollHeight - window.innerHeight);
+        scrollProgress = window.scrollY / maxScroll;
+      }, { passive: true });
+
+      // 60fps Animation Loop
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        const elapsed = clock.getElapsedTime();
+
+        // Continuous DNA Double-Helix Rotation & Harmonic Float
+        dnaGroup.rotation.y = elapsed * 0.42 + scrollProgress * Math.PI * 2.5;
+        bioGroup.position.y = Math.sin(elapsed * 0.8) * 0.35;
+
+        // Smooth Scale Interpolation for Interactive Modes
+        dnaGroup.scale.lerp(new THREE.Vector3(targetDnaScale, targetDnaScale, targetDnaScale), 0.06);
+        cellGroup.scale.lerp(new THREE.Vector3(targetCellScale, targetCellScale, targetCellScale), 0.06);
+        cellGroup.rotation.y = -elapsed * 0.18;
+        cellGroup.rotation.x = Math.sin(elapsed * 0.3) * 0.2;
+
+        // Smooth Mouse Tilt Parallax
+        bioGroup.rotation.x += (mouseY * 0.28 - bioGroup.rotation.x) * 0.05;
+        bioGroup.rotation.z += (0.28 - mouseX * 0.22 - bioGroup.rotation.z) * 0.05;
+
+        // Subtle Drift of Bio-Luminescent Particles
+        particles.rotation.y = elapsed * 0.04;
+        particles.position.y = scrollProgress * 4;
+
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    }
+
+    // =========================================================================
+    // 4. GSAP CHOREOGRAPHY & SCROLLTRIGGER REVEALS
+    // =========================================================================
+    function initAnimations() {
+      if (!window.gsap) return;
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Hero Entrance Stagger
+      gsap.from('.hero-stagger', {
+        y: 28,
+        opacity: 0,
+        duration: 0.95,
+        stagger: 0.15,
+        ease: 'power3.out',
+        clearProps: 'transform'
+      });
+
+      // Scroll-Triggered Section Reveals
+      gsap.utils.toArray('.reveal-up').forEach((el) => {
+        gsap.from(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 86%',
+            once: true
+          },
+          y: 32,
+          opacity: 0,
+          duration: 0.8,
+          ease: 'power2.out',
+          clearProps: 'transform'
+        });
+      });
+    }
+
+    window.addEventListener('load', () => {
+      initBio3DScene();
+      initAnimations();
+    });
+  </script>
+</body>
+</html>
